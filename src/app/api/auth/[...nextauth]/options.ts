@@ -25,7 +25,7 @@ export const authOptions = {
               },
               { withCredentials: true }
             );
-            console.log(response.data)
+            const a = response.data;
           } catch (error) {
             console.error("Error fetching custom JWT:", error);
           }
