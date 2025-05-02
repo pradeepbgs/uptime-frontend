@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/store/useAuth';
 
-const backend_url : string = process.env.NEXT_PUBLIC_BACKEND_URL!
+export const backend_url : string = process.env.NEXT_PUBLIC_BACKEND_URL!
 const fetchAuthStatus = async () => {
-  console.log('called')
     const response = await fetch(`${backend_url}/api/auth/check`, {
         method: 'GET',
     });
-    console.log(response)
+    // console.log(response)
     return response.json();
 };
 
@@ -15,9 +15,26 @@ export const useAuthStatus = () => {
         queryKey:['authStatus'], 
         queryFn:fetchAuthStatus,
         retry:false,
-        refetchOnWindowFocus: false
+        refetchOnWindowFocus: false,
     });
 };
+
+export const authCheck = async () => {
+  try {
+    const res = await fetch(`${backend_url}/api/v1/auth/check`, {
+      method: 'GET',
+      credentials:'include'
+    });
+    if (!res.ok) {
+      useAuth.getState().setUser(null);
+    }
+
+    const data = await res.json();
+    useAuth.getState().setUser(data.user);
+  } catch (err) {
+    useAuth.getState().setUser(null);
+  }
+}
 
 const fetchTasks = async () => {
     const response = await fetch(`${backend_url}/api/v1/task`, {

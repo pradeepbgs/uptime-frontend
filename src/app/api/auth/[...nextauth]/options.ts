@@ -12,27 +12,32 @@ export const authOptions = {
 
   callbacks: {
     async jwt({ token, account }: any) {
-        if (account?.id_token) {
-          token.idToken = account.id_token;
-          token.googleId = account.providerAccountId;
-          
-          try {
-            const response = await axios.post(
-              `${process.env.BACKEND_URL}/api/v1/auth/google`,
-              {
-                access_token: token.idToken,
-                google_id: token.googleId
-              },
-              { withCredentials: true }
-            );
-            const a = response.data;
-          } catch (error) {
-            console.error("Error fetching custom JWT:", error);
-          }
-        }
-      
-        return token;
+      if (account?.id_token) {
+        token.idToken = account.id_token;
+        token.googleId = account.providerAccountId;
+
+        // try {
+        //   const response = await axios.post(
+        //     `${process.env.BACKEND_URL}/api/v1/auth/google`,
+        //     {
+        //       access_token: token.idToken,
+        //       google_id: token.googleId
+        //     },
+        //     { withCredentials: true }
+        //   );
+        //   const a = response.data;
+        //   console.log(a)
+        // } catch (error) {
+        //   console.error("Error fetching custom JWT:", error);
+        // }
       }
-      
+
+      return token;
+    },
+    async session({ session, token }:any) {
+      session.idToken = token.idToken;
+      session.googleId = token.googleId;
+      return session;
+    }
   },
 };
