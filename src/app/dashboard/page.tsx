@@ -35,6 +35,11 @@ function Dashboard() {
   const { isLoading, data, error } = useTasks(accessToken)
   const router = useRouter()
 
+  if (!accessToken) {
+    router.push('/login')
+    return null
+  }
+
   if (isLoading) {
     return (
       <div className="bg-[#131a26] text-white min-h-screen flex items-center justify-center px-4">

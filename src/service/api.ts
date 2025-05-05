@@ -7,7 +7,6 @@ const fetchAuthStatus = async () => {
   const response = await fetch(`${backend_url}/api/auth/check`, {
     method: 'GET',
   });
-  // console.log(response)
   return response.json();
 };
 
