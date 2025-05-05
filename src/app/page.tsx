@@ -1,37 +1,11 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
-import { authCheck } from "@/service/api";
-import axios from "axios";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter()
 
-  const { data: session } = useSession();
-
-  useEffect(() => {
-    if (session?.idToken && session?.googleId) {
-      axios.post(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/google`,
-        {
-          access_token: session.idToken,
-          google_id: session.googleId,
-        },
-        {
-          withCredentials: true,
-        }
-      ).catch(err => {
-        console.error("Backend error:", err);
-      });
-    }
-  }, [session]);
-
-  useEffect(() => {
-    authCheck()
-  }, [])
   return (
     <>
       <div className="bg-[#131a26] text-white min-h-screen flex items-center justify-center px-4">
