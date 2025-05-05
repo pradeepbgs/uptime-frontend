@@ -1,7 +1,6 @@
 'use client'
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/store/useAuth';
-import { signIn, useSession } from 'next-auth/react';
 
 export const backend_url: string = process.env.NEXT_PUBLIC_BACKEND_URL!
 const fetchAuthStatus = async () => {
