@@ -3,28 +3,43 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { createTask } from '@/service/api'
-import {  useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
+import { toast } from 'sonner'
 
 function Page() {
-  const { data: session }:{data:any} = useSession()
+  const [loading, setLoading] = useState(false)
+  const { data: session }: { data: any } = useSession()
 
   const [url, setUrl] = useState('')
   const [interval, setInterval] = useState(0)
   const [err, setErr] = useState('')
 
+  const router = useRouter()
+
   const handleCreateTask = async () => {
-    if(!url || !interval){
+    setLoading(true)
+    if (!url || !interval) {
       return
     }
     try {
-    const accessToken = session?.accessToken
-    if (!accessToken) {
-      alert('Please login first')
-    }
-      await createTask(url, interval, accessToken)
-    } catch (error:any) {
+      const accessToken = session?.accessToken
+      if (!accessToken) {
+        router.push('/login')
+      }
+      const res = await createTask(url, interval, accessToken)
+      if (res) {
+        setUrl('')
+        setInterval(0)
+        toast('Task created successfully')
+      }
+    } catch (error: any) {
       setErr(error?.message)
+      toast(error?.message)
+    }
+    finally {
+      setLoading(false)
     }
   }
 
@@ -63,9 +78,17 @@ function Page() {
         <Button
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md  cursor-pointer"
           onClick={handleCreateTask}
-          disabled = { url && interval ? false : true}
+          disabled={url && interval ? false : true}
         >
-          Create Task
+          {
+            loading ? (
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              </div>
+            ) : (
+              'Create Task'
+            )
+          }
         </Button>
       </div>
     </div>

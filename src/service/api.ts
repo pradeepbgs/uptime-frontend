@@ -1,6 +1,7 @@
 'use client'
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/store/useAuth';
+import { toast } from 'sonner';
 
 export const backend_url: string = process.env.NEXT_PUBLIC_BACKEND_URL!
 const fetchAuthStatus = async () => {
@@ -83,7 +84,6 @@ const fetchTasks = async (accessToken: string) => {
 };
 
 export const useTasks = (accessToken: string) => {
-  console.log('accessToken logging in nnnnn', accessToken)
   return useQuery({
     queryKey: ['tasks'],
     queryFn: () => fetchTasks(accessToken),
@@ -124,3 +124,52 @@ export const useTaskDetails = (id: string) => {
     queryFn: () => fetchTaskDetails(id)
   })
 }
+
+
+export const updateTask = async (accessToken:string,id: string, updatedData: any) => {
+  try {
+    const response = await fetch(`${backend_url}/api/v1/task/${id}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify(updatedData)
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data?.message || "Failed to update task");
+    }
+    toast('task updated successfully')
+    return  await response.json();
+  } catch (error) {
+    toast(error?.message ?? 'error while updating task')
+    throw error;
+  }
+};
+
+
+export const deleteTask = async (accessToken:string, id: string) => {
+  try {
+    const response = await fetch(`${backend_url}/api/v1/task/${id}`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data?.message || "Failed to delete task");
+    }
+    toast('task deleted successfully')
+    return  await response.json();
+  } catch (error) {
+    toast(error?.message ?? 'error while deleting task')
+    throw error;
+  }
+};

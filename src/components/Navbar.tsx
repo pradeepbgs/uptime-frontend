@@ -1,19 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { signIn, useSession } from 'next-auth/react';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 const Navbar = () => {
-  const {data: session} = useSession()
+  const {data: session} :any = useSession()
+  const accessToken = useMemo(() => session?.accessToken as string, [session])
   const handleLogin = () => {
     signIn('google');
-  };
-
-  const signOut = () => {
-    localStorage.removeItem('session');
-    window.location.href = '/login';
   };
 
   return (
@@ -31,10 +27,10 @@ const Navbar = () => {
 
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
 
-            {session ? (
+            {accessToken ? (
               <>
                 <Button
-                  onClick={signOut}
+                  onClick={() => signOut({callbackUrl:'/'})}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl transition duration-300 cursor-pointer"
                 >
                   Logout
