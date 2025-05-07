@@ -144,7 +144,7 @@ export const updateTask = async (accessToken:string,id: string, updatedData: any
     }
     toast('task updated successfully')
     return  await response.json();
-  } catch (error) {
+  } catch (error:any) {
     toast(error?.message ?? 'error while updating task')
     throw error;
   }
@@ -168,7 +168,7 @@ export const deleteTask = async (accessToken:string, id: string) => {
     }
     toast('task deleted successfully')
     return  await response.json();
-  } catch (error) {
+  } catch (error:any) {
     toast(error?.message ?? 'error while deleting task')
     throw error;
   }
