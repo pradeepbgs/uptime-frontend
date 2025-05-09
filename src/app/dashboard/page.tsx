@@ -4,6 +4,7 @@ import { useAuth, User } from '@/store/useAuth'
 import { useRouter } from 'next/navigation'
 import { deleteTask, updateTask, useTasks } from '@/service/api'
 import { Button } from '@/components/ui/button'
+import { IoMdRefresh } from "react-icons/io";
 
 import {
   Table,
@@ -14,12 +15,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { useSession } from 'next-auth/react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { DeleteConfirmationDialog } from '@/components/Alert'
 import { UpdateTaskModal } from '@/components/UpdateModal'
 import { MdDelete } from "react-icons/md";
 import { FaPen } from "react-icons/fa";
-import {mutate} from 'swr'
+import { mutate } from 'swr'
 
 export interface Task {
   _id: string
@@ -35,7 +36,9 @@ function Dashboard() {
   const { data: session }: any = useSession()
   const user: User | null = useAuth((state) => state.user)
   const accessToken = useMemo(() => session?.accessToken as string, [session])
-  const { isLoading, data, error } = useTasks(accessToken)
+  const { isLoading, data, error, refetch } = useTasks(accessToken)
+  const [spinning, setSpinning] = useState(false);
+
   const router = useRouter()
 
   if (isLoading) {
@@ -46,7 +49,7 @@ function Dashboard() {
     )
   }
 
-  if (!accessToken) return null
+  // if (!accessToken) return null
 
   const handleDelete = async (taskId: string) => {
     await deleteTask(accessToken, taskId);
@@ -54,8 +57,27 @@ function Dashboard() {
   }
 
   const handleUpdate = async (taskId: string, updatedData: any) => {
-    updateTask(accessToken, taskId, updatedData);
+    await updateTask(accessToken, taskId, updatedData);
     mutate(['/api/tasks', accessToken])
+    await refetch()
+  }
+
+  const goToCreateTaskPage = () => {
+    if (!accessToken) return router.push("/login")
+    router.push("/dashboard/create")
+  }
+
+  const handleRefresh = async () => {
+    setSpinning(true)
+    try {
+      await refetch()
+    } catch (error: any) {
+      console.error("Refresh failed", error?.message)
+    } finally {
+      setTimeout(() => {
+        setSpinning(false)
+      }, 300);
+    }
   }
 
 
@@ -65,11 +87,22 @@ function Dashboard() {
         <h1 className="text-2xl font-bold mb-4 md:text-3xl">Welcome, {user?.username || 'User'}!</h1>
 
         <Button
-          onClick={() => router.push("/dashboard/create")}
+          onClick={goToCreateTaskPage}
           className="mb-6 cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white"
         >
           + Create Task
         </Button>
+
+        <Button
+          onClick={handleRefresh}
+          className="ml-10 cursor-pointer relative bg-indigo-600 hover:bg-indigo-700 text-white"
+        >
+          <IoMdRefresh
+            size={20}
+            className={`transition-transform duration-500 ${spinning ? 'animate-spin' : ''}`}
+          />
+        </Button>
+
 
         {error && <div className='text-red-500'>{error.message}</div>}
 
@@ -86,10 +119,16 @@ function Dashboard() {
             {data?.tasks?.map((task: Task) => (
               <TableRow
                 key={task._id}
-                className="group hover:bg-[#1e293b] transition duration-150 cursor-pointer"
+                className="group hover:bg-[#1e293b] transition duration-150"
               >
                 <TableCell className="font-medium truncate">{task.url}</TableCell>
-                <TableCell className="hidden md:table-cell">{task.isActive ? 'Active' : 'Inactive'}</TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {
+                    task.isActive
+                      ? <p className='text-green-400'>Active</p>
+                      : <p className='text-red-400'>Inactive</p>
+                  }
+                </TableCell>
                 <TableCell className="hidden md:table-cell">{task.interval}</TableCell>
                 <TableCell className="">
                   <div className="flex justify-end gap-2 md:gap-4">
@@ -97,7 +136,7 @@ function Dashboard() {
                       task={task}
                       onUpdate={handleUpdate}
                       trigger={
-                        <button className="p-2 rounded-md hover:bg-gray-700">
+                        <button className="p-2 rounded-md hover:bg-gray-700 cursor-pointer">
                           <FaPen size={20} />
                         </button>
                       }
@@ -105,7 +144,7 @@ function Dashboard() {
                     <DeleteConfirmationDialog
                       onConfirm={() => handleDelete(task._id)}
                       trigger={
-                        <button className="p-2 rounded-md hover:bg-red-700">
+                        <button className="p-2 rounded-md hover:bg-red-700 cursor-pointer">
                           <MdDelete size={25} />
                         </button>
                       }

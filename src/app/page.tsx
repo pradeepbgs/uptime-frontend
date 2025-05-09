@@ -1,10 +1,17 @@
 'use client';
 
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const {data:session} = useSession()
   const router = useRouter()
+
+  const handlePushToDashBoard = () => {
+    if (!session) return router.push("/login")
+    router.push("/dashboard")
+  }
 
   return (
     <>
@@ -16,10 +23,10 @@ export default function Home() {
           </h1>
 
           <p className="text-lg sm:text-xl text-gray-400 mb-8">
-            Monitor your websites, APIs, and services with real-time alerts, analytics, and 24/7 uptime tracking.
+            Monitor your websites, APIs, and services with real-time alerts.
           </p>
           <Button
-          onClick={() => router.push('/dashboard')}
+          onClick={handlePushToDashBoard}
             className="bg-indigo-600 hover:bg-indigo-700 text-white text-lg px-6 py-3 rounded-xl cursor-pointer">
             Get Started
           </Button>
