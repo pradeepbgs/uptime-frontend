@@ -20,7 +20,6 @@ import { DeleteConfirmationDialog } from '@/components/Alert'
 import { UpdateTaskModal } from '@/components/UpdateModal'
 import { MdDelete } from "react-icons/md";
 import { FaPen } from "react-icons/fa";
-import { mutate } from 'swr'
 
 export interface Task {
   _id: string
@@ -38,6 +37,7 @@ function Dashboard() {
   const accessToken = useMemo(() => session?.accessToken as string, [session])
   const { isLoading, data, error, refetch } = useTasks(accessToken)
   const [spinning, setSpinning] = useState(false);
+  const [adding, setAdding] = useState(false)
 
   const router = useRouter()
 
@@ -53,12 +53,10 @@ function Dashboard() {
 
   const handleDelete = async (taskId: string) => {
     await deleteTask(accessToken, taskId);
-    mutate(['/api/tasks', accessToken])
   }
 
   const handleUpdate = async (taskId: string, updatedData: any) => {
     await updateTask(accessToken, taskId, updatedData);
-    mutate(['/api/tasks', accessToken])
     await refetch()
   }
 
@@ -110,8 +108,8 @@ function Dashboard() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[40%] md:w-[200px] text-white">URL</TableHead>
-              <TableHead className='hidden md:table-cell text-white'>Status</TableHead>
-              <TableHead className='hidden md:table-cell text-white'>Interval (min)</TableHead>
+              <TableHead className='md:table-cell text-white'>Status</TableHead>
+              <TableHead className='md:table-cell text-white'>Interval (min)</TableHead>
               <TableHead className="text text-white">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -121,17 +119,40 @@ function Dashboard() {
                 key={task._id}
                 className="group hover:bg-[#1e293b] transition duration-150"
               >
-                <TableCell className="font-medium truncate">{task.url}</TableCell>
-                <TableCell className="hidden md:table-cell">
+                <TableCell className="font-medium truncate">
+                  <Button 
+                  className='mr-3 cursor-pointer'
+                  onClick={() => {
+                    setAdding(true)
+                    handleUpdate(task?._id,{
+                      ...task,
+                      isActive:true
+                    })
+                    setTimeout(() => {
+                      setAdding(false)
+                    }, 300);
+                  }}
+                  >
+                    {
+                      adding
+                        ? <p>...</p>
+                        : <p>Re-add</p>
+                    }
+                  </Button>
+                  {task.url}
+                </TableCell>
+                <TableCell className="md:table-cell">
                   {
                     task.isActive
                       ? <p className='text-green-400'>Active</p>
                       : <p className='text-red-400'>Inactive</p>
                   }
+                  
                 </TableCell>
-                <TableCell className="hidden md:table-cell">{task.interval}</TableCell>
+                
+                <TableCell className="md:table-cell">{task.interval}</TableCell>
                 <TableCell className="">
-                  <div className="flex justify-end gap-2 md:gap-4">
+                  <div className="flex justify gap-2 md:gap-4">
                     <UpdateTaskModal
                       task={task}
                       onUpdate={handleUpdate}

@@ -47,8 +47,10 @@ export const authCheck = async (accessToken:string) => {
 export const createTask = async (
   url: string,
   interval: number,
+  discordHook: string ,
   accessToken: string
 ) => {
+  
   try {
     const response = await fetch(`${backend_url}/api/v1/task`, {
       method: "POST",
@@ -57,7 +59,11 @@ export const createTask = async (
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify({ url, interval }),
+      body: JSON.stringify({ 
+        url, 
+        interval,
+        discordHook: discordHook ?? null
+       }),
     });
   
     if (!response.ok) {

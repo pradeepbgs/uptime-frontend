@@ -14,6 +14,7 @@ function Page() {
 
   const [url, setUrl] = useState('')
   const [interval, setInterval] = useState(0)
+  const [webhook, setWebhook] = useState('')
   const [err, setErr] = useState('')
 
   const router = useRouter()
@@ -28,7 +29,7 @@ function Page() {
       if (!accessToken) {
         router.push('/login')
       }
-      const res = await createTask(url, interval, accessToken)
+      const res = await createTask(url, interval, webhook, accessToken)
       if (res) {
         setUrl('')
         setInterval(0)
@@ -75,6 +76,18 @@ function Page() {
           />
           <p className="mt-1 text-sm text-gray-400">Interval: {interval} minute</p>
         </div>
+        
+        <div>
+          <label className="block mb-1 text-sm">Discord hook</label>
+          <Input
+            value={webhook}
+            required={false}
+            onChange={(e) => setWebhook(e.target.value)}
+            placeholder="https://discord-webhook.com"
+          />
+          <p className="mt-1 text-sm text-gray-400">Entered webhook: {webhook}</p>
+        </div>
+
         <Button
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md  cursor-pointer"
           onClick={handleCreateTask}
