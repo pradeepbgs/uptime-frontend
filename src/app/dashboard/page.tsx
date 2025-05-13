@@ -53,6 +53,7 @@ function Dashboard() {
 
   const handleDelete = async (taskId: string) => {
     await deleteTask(accessToken, taskId);
+    await refetch()
   }
 
   const handleUpdate = async (taskId: string, updatedData: any) => {
