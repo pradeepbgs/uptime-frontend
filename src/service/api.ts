@@ -79,6 +79,7 @@ export const createTask = async (
 };
 
 const fetchTasks = async (accessToken: string) => {
+  console.log('from fetch task ', backend_url)
   const response = await fetch(`${backend_url}/api/v1/task`, {
     method: 'GET',
     credentials: 'include',
