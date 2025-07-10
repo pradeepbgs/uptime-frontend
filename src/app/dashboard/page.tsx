@@ -20,6 +20,7 @@ import { DeleteConfirmationDialog } from '@/components/Alert'
 import { UpdateTaskModal } from '@/components/UpdateModal'
 import { MdDelete } from "react-icons/md";
 import { FaPen } from "react-icons/fa";
+import Spinner from '@/components/spinner'
 
 export interface Task {
   _id: string
@@ -41,13 +42,7 @@ function Dashboard() {
 
   const router = useRouter()
 
-  if (isLoading) {
-    return (
-      <div className="bg-[#131a26] text-white min-h-screen flex items-center justify-center px-4">
-        Loading...
-      </div>
-    )
-  }
+  if (isLoading) return <Spinner />
 
   // if (!accessToken) return null
 
@@ -110,7 +105,7 @@ function Dashboard() {
             <TableRow>
               <TableHead className="w-[40%] md:w-[200px] text-white">URL</TableHead>
               <TableHead className='md:table-cell text-white'>Status</TableHead>
-              <TableHead className='md:table-cell text-white'>Interval (min)</TableHead>
+              <TableHead className='md:table-cell text-white'>Interval (seconds)</TableHead>
               <TableHead className="text text-white">Actions</TableHead>
             </TableRow>
           </TableHeader>
