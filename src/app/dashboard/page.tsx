@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { deleteTask, updateTask, useTasks } from '@/service/api'
 import { Button } from '@/components/ui/button'
 import { IoMdRefresh } from "react-icons/io";
@@ -40,7 +39,6 @@ function Dashboard() {
   const { isLoading, data, error, refetch } = useTasks(accessToken)
   const [spinning, setSpinning] = useState(false);
   const [adding, setAdding] = useState(false)
-  const router = useRouter()
 
   if (isLoading) return <Spinner />
 
@@ -77,7 +75,7 @@ function Dashboard() {
 
           <Button
             onClick={handleRefresh}
-            className=" cursor-pointer relative bg-indigo-600 hover:bg-indigo-700 text-white"
+            className=" cursor-pointer relative bg-indigo-600 hover:bg-indigo-700 text-white mb-2"
           >
             <IoMdRefresh
               size={20}
@@ -120,7 +118,7 @@ function Dashboard() {
                   >
                     {adding ? <p>...</p> : <IoMdRefresh
                       size={17}
-                      className={`transition-transform duration-500 ${spinning ? 'animate-spin' : ''}`}
+                      className={`transition-transform duration-500 `}
                     />}
                   </Button>
                   {task.url}
