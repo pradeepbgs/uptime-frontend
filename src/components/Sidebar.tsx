@@ -11,8 +11,8 @@ const Sidebar = () => {
 
   return (
     <aside className="w-64 bg-[#1e293b] p-4">
-      <h2 className="text-xl font-bold mb-6">Dashboard</h2>
-      <nav className="space-y-2">
+      <Link href='/' className="text-xl font-bold">Uptime</Link>
+      <nav className="space-y-2 mt-5">
         <Link href="/dashboard" className={linkClass('/dashboard')}>
           Home
         </Link>
