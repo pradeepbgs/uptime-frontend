@@ -55,7 +55,7 @@ function Page() {
   }
 
   return (
-    <div className="bg-[#0f172a] text-white min-h-screen px-4 py-12 flex justify-center items-center">
+    <div className=" min-h-screen px-4 py-12 flex justify-center items-center">
       <div className="w-full max-w-lg bg-[#1e293b] p-6 rounded-2xl shadow-lg space-y-3">
         <h1 className="text-2xl font-semibold text-center">Create a New Task</h1>
 

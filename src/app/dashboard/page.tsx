@@ -1,6 +1,5 @@
 'use client'
 
-import { useAuth, User } from '@/store/useAuth'
 import { useRouter } from 'next/navigation'
 import { deleteTask, updateTask, useTasks } from '@/service/api'
 import { Button } from '@/components/ui/button'
@@ -30,16 +29,17 @@ export interface Task {
   max: number
   createdAt: string
   updatedAt: string
+  lastLatency?: number
+  pingCount?: number
 }
 
 function Dashboard() {
   const { data: session }: any = useSession()
-  const user: User | null = useAuth((state) => state.user)
+
   const accessToken = useMemo(() => session?.accessToken as string, [session])
   const { isLoading, data, error, refetch } = useTasks(accessToken)
   const [spinning, setSpinning] = useState(false);
   const [adding, setAdding] = useState(false)
-
   const router = useRouter()
 
   if (isLoading) return <Spinner />
@@ -56,10 +56,6 @@ function Dashboard() {
     await refetch()
   }
 
-  const goToCreateTaskPage = () => {
-    if (!accessToken) return router.push("/login")
-    router.push("/dashboard/create")
-  }
 
   const handleRefresh = async () => {
     setSpinning(true)
@@ -74,28 +70,20 @@ function Dashboard() {
     }
   }
 
-
   return (
-    <div className="bg-[#131a26] text-white min-h-screen p-4">
-      <div className='py-8'>
-        <h1 className="text-2xl font-bold mb-4 md:text-3xl">Welcome, {user?.username || 'User'}!</h1>
+    <div className="min-h-screen">
+      <div className='md:py-3 py-15'>
+        {/* <h1 className="text-2xl font-bold mb-4 md:text-3xl">Welcome {session.user.name || 'User'}</h1> */}
 
-        <Button
-          onClick={goToCreateTaskPage}
-          className="mb-6 cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white"
-        >
-          + Create Task
-        </Button>
-
-        <Button
-          onClick={handleRefresh}
-          className="ml-10 cursor-pointer relative bg-indigo-600 hover:bg-indigo-700 text-white"
-        >
-          <IoMdRefresh
-            size={20}
-            className={`transition-transform duration-500 ${spinning ? 'animate-spin' : ''}`}
-          />
-        </Button>
+          <Button
+            onClick={handleRefresh}
+            className=" cursor-pointer relative bg-indigo-600 hover:bg-indigo-700 text-white"
+          >
+            <IoMdRefresh
+              size={20}
+              className={`transition-transform duration-500 ${spinning ? 'animate-spin' : ''}`}
+            />
+          </Button>
 
 
         {error && <div className='text-red-500'>{error.message}</div>}
@@ -104,11 +92,14 @@ function Dashboard() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[40%] md:w-[200px] text-white">URL</TableHead>
-              <TableHead className='md:table-cell text-white'>Status</TableHead>
-              <TableHead className='md:table-cell text-white'>Interval (seconds)</TableHead>
-              <TableHead className="text text-white">Actions</TableHead>
+              <TableHead className="text-white">Status</TableHead>
+              <TableHead className="text-white">Interval (seconds)</TableHead>
+              <TableHead className="text-white">Latency (ms)</TableHead>
+              <TableHead className="text-white">Ping Count</TableHead>
+              <TableHead className="text-white">Actions</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {data?.tasks?.map((task: Task) => (
               <TableRow
@@ -116,38 +107,37 @@ function Dashboard() {
                 className="group hover:bg-[#1e293b] transition duration-150"
               >
                 <TableCell className="font-medium truncate">
-                  <Button 
-                  className='mr-3 cursor-pointer'
-                  onClick={() => {
-                    setAdding(true)
-                    handleUpdate(task?._id,{
-                      ...task,
-                      isActive:true
-                    })
-                    setTimeout(() => {
-                      setAdding(false)
-                    }, 300);
-                  }}
+                  <Button
+                    className='mr-3 cursor-pointer'
+                    onClick={() => {
+                      setAdding(true)
+                      handleUpdate(task?._id, {
+                        ...task,
+                        isActive: true
+                      })
+                      setTimeout(() => setAdding(false), 300)
+                    }}
                   >
-                    {
-                      adding
-                        ? <p>...</p>
-                        : <p>Re-add</p>
-                    }
+                    {adding ? <p>...</p> : <IoMdRefresh
+                      size={17}
+                      className={`transition-transform duration-500 ${spinning ? 'animate-spin' : ''}`}
+                    />}
                   </Button>
                   {task.url}
                 </TableCell>
-                <TableCell className="md:table-cell">
-                  {
-                    task.isActive
-                      ? <p className='text-green-400'>Active</p>
-                      : <p className='text-red-400'>Inactive</p>
+
+                <TableCell>
+                  {task.isActive
+                    ? <p className='text-green-400'>Active</p>
+                    : <p className='text-red-400'>Inactive</p>
                   }
-                  
                 </TableCell>
-                
-                <TableCell className="md:table-cell">{task.interval}</TableCell>
-                <TableCell className="">
+
+                <TableCell>{task.interval}</TableCell>
+                <TableCell>{task.lastLatency ?? '-'}</TableCell>
+                <TableCell>{task.pingCount ?? 0}</TableCell>
+
+                <TableCell>
                   <div className="flex justify gap-2 md:gap-4">
                     <UpdateTaskModal
                       task={task}
@@ -169,6 +159,7 @@ function Dashboard() {
                   </div>
                 </TableCell>
               </TableRow>
+
             ))}
           </TableBody>
         </Table>

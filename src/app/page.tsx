@@ -1,11 +1,12 @@
 'use client';
 
+import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const {data:session} = useSession()
+  const { data: session } = useSession()
   const router = useRouter()
 
   const handlePushToDashBoard = () => {
@@ -15,7 +16,9 @@ export default function Home() {
 
   return (
     <>
+      <Navbar />
       <div className="bg-[#131a26] text-white min-h-screen flex items-center justify-center px-4">
+
         <div className="text-center max-w-2xl">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight mb-6">
             {/* The world’s leading <br /> */}
@@ -26,7 +29,7 @@ export default function Home() {
             Monitor your websites, APIs, and services with real-time alerts.
           </p>
           <Button
-          onClick={handlePushToDashBoard}
+            onClick={handlePushToDashBoard}
             className="bg-indigo-600 hover:bg-indigo-700 text-white text-lg px-6 py-3 rounded-xl cursor-pointer">
             Get Started
           </Button>

@@ -20,14 +20,12 @@ export const useAuthStatus = () => {
   });
 };
 
-export const authCheck = async (accessToken:string) => {
+export const authCheck = async (accessToken:string|null) => {
   try {
     const res = await fetch(`${backend_url}/api/v1/auth/check`, {
       method: 'GET',
       credentials: 'include',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+
     });
     if (!res.ok) {
       useAuth.getState().setUser(null);
