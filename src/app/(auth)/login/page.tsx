@@ -10,16 +10,17 @@ function Login() {
     }
 
     return (
-        <div className="bg-[#131a26] text-white flex justify-center items-center h-full">
+        <div className="bg-black text-white flex flex-col justify-center items-center min-h-screen gap-6">
+            <div className="text-center mb-2">
+                <h1 className="text-2xl font-bold text-white mb-1">uptime-bot</h1>
+                <p className="text-sm text-white/40">Sign in to access your dashboard</p>
+            </div>
             <Button
-                className="md:w-auto 
-                bg-slate-100 text-black hover:bg-slate-200 
-                cursor-pointer px-5 py-2 rounded-xl transition duration-300
-                "
+                className="bg-white text-black hover:bg-white/90 cursor-pointer px-6 py-3 rounded-lg font-medium transition-all duration-200"
                 variant="outline"
                 onClick={handleLogin}
             >
-                Login with Google
+                Continue with Google
             </Button>
         </div>
     )

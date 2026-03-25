@@ -42,8 +42,6 @@ function Dashboard() {
 
   if (isLoading) return <Spinner />
 
-  // if (!accessToken) return null
-
   const handleDelete = async (taskId: string) => {
     await deleteTask(accessToken, taskId);
     await refetch()
@@ -53,7 +51,6 @@ function Dashboard() {
     await updateTask(accessToken, taskId, updatedData);
     await refetch()
   }
-
 
   const handleRefresh = async () => {
     setSpinning(true)
@@ -70,97 +67,118 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen">
-      <div className='md:py-3 py-15'>
-        {/* <h1 className="text-2xl font-bold mb-4 md:text-3xl">Welcome {session.user.name || 'User'}</h1> */}
+      <div className="md:py-3 py-12">
 
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-xl font-semibold text-white">Monitors</h1>
+            <p className="text-sm text-white/40 mt-0.5">
+              {data?.tasks?.length ?? 0} task{data?.tasks?.length !== 1 ? 's' : ''} tracked
+            </p>
+          </div>
           <Button
             onClick={handleRefresh}
-            className=" cursor-pointer relative bg-indigo-600 hover:bg-indigo-700 text-white mb-2"
+            className="cursor-pointer bg-white/10 hover:bg-white/20 text-white border border-white/15 px-3 py-2 rounded-lg text-sm transition-all duration-200"
           >
             <IoMdRefresh
-              size={20}
+              size={16}
               className={`transition-transform duration-500 ${spinning ? 'animate-spin' : ''}`}
             />
           </Button>
+        </div>
 
+        {error && (
+          <div className="mb-4 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            {error.message}
+          </div>
+        )}
 
-        {error && <div className='text-red-500'>{error.message}</div>}
-
-        <Table className='text-white'>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[40%] md:w-[200px] text-white">URL</TableHead>
-              <TableHead className="text-white">Status</TableHead>
-              <TableHead className="text-white">Interval (seconds)</TableHead>
-              <TableHead className="text-white">Latency (ms)</TableHead>
-              <TableHead className="text-white">Ping Count</TableHead>
-              <TableHead className="text-white">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {data?.tasks?.map((task: Task) => (
-              <TableRow
-                key={task._id}
-                className="group hover:bg-[#1e293b] transition duration-150"
-              >
-                <TableCell className="font-medium truncate">
-                  <Button
-                    className='mr-3 cursor-pointer'
-                    onClick={() => {
-                      setAdding(true)
-                      handleUpdate(task?._id, {
-                        ...task,
-                        isActive: true
-                      })
-                      setTimeout(() => setAdding(false), 300)
-                    }}
-                  >
-                    {adding ? <p>...</p> : <IoMdRefresh
-                      size={17}
-                      className={`transition-transform duration-500 `}
-                    />}
-                  </Button>
-                  {task.url}
-                </TableCell>
-
-                <TableCell>
-                  {task.isActive
-                    ? <p className='text-green-400'>Active</p>
-                    : <p className='text-red-400'>Inactive</p>
-                  }
-                </TableCell>
-
-                <TableCell>{task.interval}</TableCell>
-                <TableCell>{task.lastLatency ?? '-'}</TableCell>
-                <TableCell>{task.pingCount ?? 0}</TableCell>
-
-                <TableCell>
-                  <div className="flex justify gap-2 md:gap-4">
-                    <UpdateTaskModal
-                      task={task}
-                      onUpdate={handleUpdate}
-                      trigger={
-                        <button className="p-2 rounded-md hover:bg-gray-700 cursor-pointer">
-                          <FaPen size={20} />
-                        </button>
-                      }
-                    />
-                    <DeleteConfirmationDialog
-                      onConfirm={() => handleDelete(task._id)}
-                      trigger={
-                        <button className="p-2 rounded-md hover:bg-red-700 cursor-pointer">
-                          <MdDelete size={25} />
-                        </button>
-                      }
-                    />
-                  </div>
-                </TableCell>
+        <div className="rounded-xl border border-white/10 overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-white/10 hover:bg-transparent">
+                <TableHead className="text-white/40 text-xs uppercase tracking-wider font-medium">URL</TableHead>
+                <TableHead className="text-white/40 text-xs uppercase tracking-wider font-medium">Status</TableHead>
+                <TableHead className="text-white/40 text-xs uppercase tracking-wider font-medium">Interval</TableHead>
+                <TableHead className="text-white/40 text-xs uppercase tracking-wider font-medium">Latency</TableHead>
+                <TableHead className="text-white/40 text-xs uppercase tracking-wider font-medium">Pings</TableHead>
+                <TableHead className="text-white/40 text-xs uppercase tracking-wider font-medium">Actions</TableHead>
               </TableRow>
+            </TableHeader>
 
-            ))}
-          </TableBody>
-        </Table>
+            <TableBody>
+              {data?.tasks?.length === 0 && (
+                <TableRow className="border-white/10 hover:bg-white/5">
+                  <TableCell colSpan={6} className="text-center text-white/30 py-12 text-sm">
+                    No monitors yet. Create your first task.
+                  </TableCell>
+                </TableRow>
+              )}
+              {data?.tasks?.map((task: Task) => (
+                <TableRow
+                  key={task._id}
+                  className="border-white/10 hover:bg-white/5 transition-colors duration-150"
+                >
+                  <TableCell className="font-medium text-white/80">
+                    <div className="flex items-center gap-2">
+                      <Button
+                        className="h-7 w-7 p-0 bg-white/5 hover:bg-white/15 text-white/60 hover:text-white border border-white/10 rounded cursor-pointer transition-all duration-200"
+                        onClick={() => {
+                          setAdding(true)
+                          handleUpdate(task?._id, {
+                            ...task,
+                            isActive: true
+                          })
+                          setTimeout(() => setAdding(false), 300)
+                        }}
+                      >
+                        {adding ? <span className="text-xs">…</span> : <IoMdRefresh size={13} />}
+                      </Button>
+                      <span className="truncate max-w-[200px] text-sm">{task.url}</span>
+                    </div>
+                  </TableCell>
+
+                  <TableCell>
+                    <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full ${
+                      task.isActive
+                        ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                        : 'bg-white/5 text-white/40 border border-white/10'
+                    }`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${task.isActive ? 'bg-green-400' : 'bg-white/30'}`} />
+                      {task.isActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </TableCell>
+
+                  <TableCell className="text-white/60 text-sm">{task.interval}s</TableCell>
+                  <TableCell className="text-white/60 text-sm">{task.lastLatency ? `${task.lastLatency}ms` : '—'}</TableCell>
+                  <TableCell className="text-white/60 text-sm">{task.pingCount ?? 0}</TableCell>
+
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <UpdateTaskModal
+                        task={task}
+                        onUpdate={handleUpdate}
+                        trigger={
+                          <button className="p-2 rounded-md text-white/40 hover:text-white hover:bg-white/10 cursor-pointer transition-all duration-200">
+                            <FaPen size={13} />
+                          </button>
+                        }
+                      />
+                      <DeleteConfirmationDialog
+                        onConfirm={() => handleDelete(task._id)}
+                        trigger={
+                          <button className="p-2 rounded-md text-white/40 hover:text-red-400 hover:bg-red-500/10 cursor-pointer transition-all duration-200">
+                            <MdDelete size={17} />
+                          </button>
+                        }
+                      />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   )

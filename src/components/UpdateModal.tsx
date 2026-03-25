@@ -62,19 +62,20 @@ export function UpdateTaskModal({
       <DialogTrigger asChild>
         {trigger}
       </DialogTrigger>
-      <DialogContent className="bg-[#1f2937] text-white">
+      <DialogContent className="bg-[#111111] border border-white/15 text-white shadow-2xl">
         <DialogHeader>
-          <DialogTitle>Edit Task</DialogTitle>
-          <DialogDescription className="text-white">
-            Update your task&apos;s information below.
+          <DialogTitle className="text-white">Edit Monitor</DialogTitle>
+          <DialogDescription className="text-white/40 text-sm">
+            Update your monitor settings below.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 mt-4">
+        <div className="flex flex-col gap-4 mt-2">
           <Input
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="URL"
+            className="bg-white/5 border-white/15 text-white placeholder:text-white/25 focus:border-white/40"
           />
 
           <div className="flex gap-2">
@@ -83,16 +84,16 @@ export function UpdateTaskModal({
               value={interval}
               onChange={(e) => setInterval(Number(e.target.value))}
               placeholder="Interval"
-              className="flex-1"
+              className="flex-1 bg-white/5 border-white/15 text-white placeholder:text-white/25 focus:border-white/40"
               min={unit === 'seconds' ? 30 : 1}
             />
             <Select value={unit} onValueChange={(val: any) => setUnit(val)}>
-              <SelectTrigger className="w-[130px] bg-gray-800 border border-gray-600 text-white">
+              <SelectTrigger className="w-[130px] bg-white/5 border-white/15 text-white">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-gray-800 text-white">
-                <SelectItem value="seconds">Seconds</SelectItem>
-                <SelectItem value="minutes">Minutes</SelectItem>
+              <SelectContent className="bg-[#111111] border-white/15 text-white">
+                <SelectItem value="seconds" className="focus:bg-white/10 focus:text-white">Seconds</SelectItem>
+                <SelectItem value="minutes" className="focus:bg-white/10 focus:text-white">Minutes</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -101,23 +102,29 @@ export function UpdateTaskModal({
             value={isActive ? "active" : "inactive"}
             onValueChange={(value) => setIsActive(value === "active")}
           >
-            <SelectTrigger className="bg-gray-800 border border-gray-600 text-white">
+            <SelectTrigger className="bg-white/5 border-white/15 text-white">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
-            <SelectContent className="bg-gray-800 text-white">
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectContent className="bg-[#111111] border-white/15 text-white">
+              <SelectItem value="active" className="focus:bg-white/10 focus:text-white">Active</SelectItem>
+              <SelectItem value="inactive" className="focus:bg-white/10 focus:text-white">Inactive</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <DialogFooter className="mt-4">
+        <DialogFooter className="mt-4 gap-2">
           <DialogClose asChild>
-            <Button variant="secondary" className="cursor-pointer">
+            <Button
+              variant="secondary"
+              className="bg-white/10 hover:bg-white/20 text-white border border-white/15 cursor-pointer"
+            >
               Cancel
             </Button>
           </DialogClose>
-          <Button onClick={handleSubmit} className="cursor-pointer">
+          <Button
+            onClick={handleSubmit}
+            className="bg-white text-black hover:bg-white/90 cursor-pointer font-medium"
+          >
             Save Changes
           </Button>
         </DialogFooter>

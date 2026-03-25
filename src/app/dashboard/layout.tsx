@@ -2,23 +2,23 @@
 
 import Sidebar from '@/components/Sidebar';
 import React, { useState } from 'react';
-import { IoMdMenu } from 'react-icons/io';
+import { IoMdMenu, IoMdClose } from 'react-icons/io';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-[#0f172a] text-white relative">
-      {!sidebarOpen && <button
+    <div className="flex min-h-screen bg-[#050505] text-white relative">
+      <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="md:hidden p-4 focus:outline-none z-50 absolute top-2 left-2"
+        className="md:hidden p-4 focus:outline-none z-50 absolute top-2 left-2 text-white/60 hover:text-white transition-colors"
       >
-        <IoMdMenu size={24} />
-      </button>}
+        {sidebarOpen ? <IoMdClose size={22} /> : <IoMdMenu size={22} />}
+      </button>
 
       <div
         className={`
-          fixed inset-y-0 left-0 z-40 w-64 transform bg-[#1e293b] transition-transform duration-300
+          fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           md:static md:translate-x-0
         `}
@@ -28,12 +28,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30  bg-opacity-50 md:hidden"
+          className="fixed inset-0 z-30 bg-black/70 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      <main className="flex-1 p-4 overflow-auto">{children}</main>
+      <main className="flex-1 p-6 overflow-auto">{children}</main>
     </div>
   );
 }

@@ -44,7 +44,7 @@ function Page() {
         setUrl('')
         setInterval(0)
         setWebhook('')
-        toast('✅ Task created successfully')
+        toast('Task created successfully')
       }
     } catch (error: any) {
       setErr(error?.message)
@@ -55,69 +55,66 @@ function Page() {
   }
 
   return (
-    <div className=" min-h-screen px-4 py-12 flex justify-center items-center">
-      <div className="w-full max-w-lg bg-[#1e293b] p-6 rounded-2xl shadow-lg space-y-3">
-        <h1 className="text-2xl font-semibold text-center">Create a New Task</h1>
+    <div className="min-h-screen px-4 py-12 flex justify-center items-start md:items-center">
+      <div className="w-full max-w-lg">
 
-        {err && (
-          <div className="bg-red-600/20 text-red-400 px-3 py-2 rounded">{err}</div>
-        )}
-
-        <div className="space-y-2">
-          <label className="block text-sm ">URL to monitor</label>
-          <Input
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://example.com"
-          />
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-white">New Monitor</h1>
+          <p className="text-sm text-white/40 mt-1">Set up a URL to start monitoring</p>
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm">Interval *</label>
-          <div className="flex items-center gap-3">
+        <div className="bg-[#111111] border border-white/10 rounded-xl p-6 space-y-5">
+
+          {err && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg text-sm">
+              {err}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <label className="block text-sm text-white/60">URL to monitor</label>
             <Input
-              type="number"
-              min={1}
-              value={interval}
-              onChange={(e) => setInterval(Number(e.target.value))}
-              placeholder="e.g., 120"
-              className="flex-1"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://example.com"
+              className="bg-white/5 border-white/15 text-white placeholder:text-white/25 focus:border-white/40 focus:ring-0"
             />
-            <Select value={unit} onValueChange={(val: any) => setUnit(val)}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="minutes" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="seconds">Seconds</SelectItem>
-                <SelectItem value="minutes">Minutes</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
-          <p className="text-gray-400 text-sm">
-            Final interval: {unit === 'minutes' ? interval * 60 : interval} seconds
-          </p>
+
+          <div className="space-y-2">
+            <label className="block text-sm text-white/60">Check interval</label>
+            <div className="flex items-center gap-3">
+              <Input
+                type="number"
+                min={1}
+                value={interval}
+                onChange={(e) => setInterval(Number(e.target.value))}
+                placeholder="e.g. 120"
+                className="flex-1 bg-white/5 border-white/15 text-white placeholder:text-white/25 focus:border-white/40 focus:ring-0"
+              />
+              <Select value={unit} onValueChange={(val: any) => setUnit(val)}>
+                <SelectTrigger className="w-[120px] bg-white/5 border-white/15 text-white">
+                  <SelectValue placeholder="seconds" />
+                </SelectTrigger>
+                <SelectContent className="bg-[#111111] border-white/15 text-white">
+                  <SelectItem value="seconds" className="focus:bg-white/10 focus:text-white">Seconds</SelectItem>
+                  <SelectItem value="minutes" className="focus:bg-white/10 focus:text-white">Minutes</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <p className="text-xs text-white/30">
+              Every {unit === 'minutes' ? interval * 60 : interval} seconds
+            </p>
+          </div>
+
+          <Button
+            className="w-full bg-white text-black hover:bg-white/90 font-medium rounded-lg cursor-pointer transition-all duration-200 disabled:opacity-30"
+            onClick={handleCreateTask}
+            disabled={loading || !url || interval <= 0}
+          >
+            {loading ? <Spinner /> : 'Create Monitor'}
+          </Button>
         </div>
-
-        {/* <div className="space-y-2">
-          <label className="block text-sm">Discord Webhook (optional)</label>
-          <Input
-            value={webhook}
-            onChange={(e) => setWebhook(e.target.value)}
-            placeholder="https://discord-webhook.com"
-          />
-        </div> */}
-
-        <Button
-          className="w-full bg-indigo-600 hover:bg-indigo-700"
-          onClick={handleCreateTask}
-          disabled={loading || !url || interval <= 0}
-        >
-          {
-
-            loading ? <Spinner />
-              : 'Create Task'
-          }
-        </Button>
       </div>
     </div>
   )
